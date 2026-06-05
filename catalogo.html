@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo Voldo Maquinaria | Venta y Arrendamiento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        voldoRed: '#cc0000',
+                        voldoBlack: '#111111',
+                        voldoGray: '#f3f4f6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .clip-diagonal { clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%); }
+        .seccion-vista { animation: fadeIn 0.3s ease-in-out; }
+        .item-catalogo { animation: scaleIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .enfocado { animation: pulseBorder 1.5s ease-out; }
+        @keyframes pulseBorder { 0% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(204, 0, 0, 0); } 100% { box-shadow: 0 0 0 0 rgba(204, 0, 0, 0); } }
+        /* Triángulo inferior para barras */
+        .triangle-down { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 15px solid #cc0000; margin: 0 auto; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Navegación Superior -->
+    <header class="bg-voldoBlack text-white border-b-[6px] border-voldoRed sticky top-0 z-40 shadow-xl">
+        <div class="container mx-auto px-4 py-3 md:py-4 flex justify-between items-center">
+            
+            <!-- Logo -->
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="cambiarPestana('sec-inicio', this)">
+                <div class="bg-white p-1.5 rounded-xl shadow-md border-2 border-transparent group-hover:border-gray-200 transition duration-300 w-14 h-14 md:w-16 md:h-16 flex items-center justify-center overflow-hidden">
+                    <img src="logo-voldo.png" alt="Grupo Voldo Logo" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col leading-tight">
+                    <span class="text-2xl md:text-3xl font-black tracking-widest text-white drop-shadow-sm">GRUPO</span>
+                    <span class="text-xl md:text-2xl font-black tracking-widest text-voldoRed drop-shadow-sm -mt-1">VOLDO</span>
+                </div>
+            </div>
+            
+            <!-- Menú -->
+            <nav class="hidden md:flex gap-8 font-bold text-sm tracking-widest uppercase" id="menu-principal">
+                <button onclick="cambiarPestana('sec-inicio', this)" class="pestana-btn text-voldoRed hover:text-white transition transform hover:scale-105">Inicio</button>
+                <button onclick="cambiarPestana('sec-catalogo', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition transform hover:scale-105">Catálogo</button>
+                <button onclick="cambiarPestana('sec-arrendamiento', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition transform hover:scale-105">Arrendamiento</button>
+                <button onclick="cambiarPestana('sec-refacciones', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition transform hover:scale-105">Refacciones</button>
+                <button onclick="cambiarPestana('sec-contacto', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition transform hover:scale-105">Contacto</button>
+            </nav>
+
+            <div class="flex items-center gap-4">
+                <!-- Carrito -->
+                <button onclick="toggleCarrito()" class="relative text-gray-300 hover:text-white focus:outline-none transition transform hover:scale-110">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    <span id="badge-carrito" class="absolute -top-2 -right-2 bg-voldoRed text-white text-[11px] font-bold w-5 h-5 flex items-center justify-center rounded-full hidden shadow-md">0</span>
+                </button>
+                <!-- Menú Móvil -->
+                <button id="btn-menu-movil" class="md:hidden text-gray-300 hover:text-white focus:outline-none">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="menu-movil" class="hidden md:hidden bg-voldoBlack border-t border-gray-800 pb-4 shadow-inner">
+            <nav class="flex flex-col px-4 pt-2 space-y-2 font-semibold text-base text-center">
+                <button onclick="cambiarPestana('sec-inicio', this)" class="pestana-btn text-voldoRed hover:text-white transition block py-3 rounded hover:bg-gray-800 uppercase tracking-wider">Inicio</button>
+                <button onclick="cambiarPestana('sec-catalogo', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition block py-3 rounded hover:bg-gray-800 uppercase tracking-wider">Catálogo</button>
+                <button onclick="cambiarPestana('sec-arrendamiento', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition block py-3 rounded hover:bg-gray-800 uppercase tracking-wider">Arrendamiento</button>
+                <button onclick="cambiarPestana('sec-refacciones', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition block py-3 rounded hover:bg-gray-800 uppercase tracking-wider">Refacciones</button>
+                <button onclick="cambiarPestana('sec-contacto', this)" class="pestana-btn text-gray-300 hover:text-voldoRed transition block py-3 rounded hover:bg-gray-800 uppercase tracking-wider">Contacto</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- PANEL CARRITO -->
+    <div id="carrito-overlay" onclick="toggleCarrito()" class="fixed inset-0 bg-black/70 z-[60] hidden transition-opacity backdrop-blur-sm"></div>
+    <div id="carrito-lateral" class="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 bg-voldoBlack text-white flex justify-between items-center border-b-[6px] border-voldoRed">
+            <h3 class="font-black text-xl uppercase tracking-widest flex items-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg> Mi Cotización
+            </h3>
+            <button onclick="toggleCarrito()" class="text-gray-400 hover:text-white transition"><svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        <div id="contenido-carrito" class="flex-1 overflow-y-auto p-5 space-y-4 bg-gray-50"></div>
+        <div class="p-6 border-t border-gray-200 bg-white">
+            <button onclick="prepararCotizacionYEnviar()" class="w-full bg-voldoRed text-white font-black py-4 rounded shadow-md hover:bg-red-800 transition uppercase tracking-widest flex items-center justify-center gap-2 text-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg> Solicitar a Ventas
+            </button>
+        </div>
+    </div>
+
+    <main class="flex-grow">
+        <!-- ==================== PESTAÑA 0: INICIO (ESTILO CORPORATIVO) ==================== -->
+        <div id="sec-inicio" class="seccion-vista">
+            
+            <!-- 1. Hero Principal -->
+            <section class="relative w-full h-[600px] overflow-hidden bg-voldoBlack">
+                <!-- Imágenes de fondo -->
+                <div id="carrusel" class="flex transition-transform duration-700 ease-in-out h-full w-full">
+                    <div class="w-full h-full flex-shrink-0 relative"><img id="img-carrusel-1" src="https://placehold.co/1920x800/222222/555555?text=Imagen+1" class="w-full h-full object-cover"></div>
+                    <div class="w-full h-full flex-shrink-0 relative"><img id="img-carrusel-2" src="https://placehold.co/1920x800/440000/ff4444?text=Imagen+2" class="w-full h-full object-cover"></div>
+                    <div class="w-full h-full flex-shrink-0 relative"><img id="img-carrusel-3" src="https://placehold.co/1920x800/111111/333333?text=Imagen+3" class="w-full h-full object-cover"></div>
+                    <div class="w-full h-full flex-shrink-0 relative"><img id="img-carrusel-4" src="https://placehold.co/1920x800/330000/aa2222?text=Imagen+4" class="w-full h-full object-cover"></div>
+                    <div class="w-full h-full flex-shrink-0 relative"><img id="img-carrusel-5" src="https://placehold.co/1920x800/222222/555555?text=Imagen+5" class="w-full h-full object-cover"></div>
+                    <div class="w-full h-full flex-shrink-0 relative"><img id="img-carrusel-6" src="https://placehold.co/1920x800/cc0000/ff4444?text=Imagen+6" class="w-full h-full object-cover"></div>
+                </div>
+                <!-- Degradado oscuro a la izquierda -->
+                <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none"></div>
+                <!-- Contenido Texto Alineado a la izquierda -->
+                <div class="absolute inset-0 flex flex-col justify-center items-start text-left px-6 md:px-16 lg:px-24 z-10 pointer-events-none w-full md:w-3/4 lg:w-2/3">
+                    <h2 class="text-voldoRed font-extrabold tracking-widest uppercase mb-2 text-lg drop-shadow">Grupo Voldo</h2>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 tracking-tight uppercase leading-tight drop-shadow-lg">
+                        Fuerza y maquinaria <br>para <span class="text-gray-300">tus proyectos</span>
+                    </h1>
+                    <p class="text-base md:text-lg text-gray-300 mb-10 max-w-xl font-medium border-l-4 border-voldoRed pl-4">
+                        Especialistas en venta, arrendamiento y mantenimiento de maquinaria pesada. Tu socio logístico e industrial en todo el sureste.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 pointer-events-auto w-full sm:w-auto">
+                        <button onclick="cambiarPestana('sec-catalogo')" class="bg-white text-voldoBlack px-8 py-4 font-black hover:bg-gray-200 transition uppercase tracking-widest text-sm text-center">Ver Catálogo</button>
+                        <button onclick="cambiarPestana('sec-contacto')" class="bg-voldoRed text-white px-8 py-4 font-black hover:bg-red-800 transition uppercase tracking-widest text-sm shadow-xl text-center">Contactar Asesor</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Barra roja divisora con flecha -->
+            <div class="bg-voldoRed h-4 w-full"></div>
+            <div class="triangle-down"></div>
+
+            <!-- 2. Tarjetas de Servicios (Estilo Grid corporativo) -->
+            <section class="container mx-auto px-4 py-16 -mt-8 relative z-10">
+                <div class="text-center mb-10">
+                    <p class="text-gray-500 font-bold tracking-widest uppercase text-sm mb-2">Con Grupo Voldo tendrás acceso a</p>
+                    <h2 class="text-3xl font-black text-voldoBlack uppercase tracking-tight">Soluciones Integrales para la Industria</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Tarjeta Venta -->
+                    <div class="group cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col" onclick="cambiarPestana('sec-catalogo')">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://placehold.co/600x400/333/666?text=Venta" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                        </div>
+                        <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition duration-300 tracking-widest flex-grow flex items-center justify-center">
+                            Venta de Equipos
+                        </div>
+                    </div>
+                    <!-- Tarjeta Renta -->
+                    <div class="group cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col" onclick="cambiarPestana('sec-arrendamiento')">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://placehold.co/600x400/444/777?text=Arrendamiento" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                        </div>
+                        <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition duration-300 tracking-widest flex-grow flex items-center justify-center">
+                            Arrendamiento
+                        </div>
+                    </div>
+                    <!-- Tarjeta Refacciones -->
+                    <div class="group cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col" onclick="cambiarPestana('sec-refacciones')">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://placehold.co/600x400/555/888?text=Refacciones" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                        </div>
+                        <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition duration-300 tracking-widest flex-grow flex items-center justify-center">
+                            Refacciones Originales
+                        </div>
+                    </div>
+                    <!-- Tarjeta Soporte -->
+                    <div class="group cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col" onclick="cambiarPestana('sec-contacto')">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="https://placehold.co/600x400/222/555?text=Soporte" class="w-full h-full object-cover group-hover:scale-105 transition duration-700">
+                        </div>
+                        <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition duration-300 tracking-widest flex-grow flex items-center justify-center">
+                            Soporte Técnico
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Sección "Why Choose Us" (100% Chiapaneca + Video) -->
+            <section class="bg-white py-16 md:py-24 border-t border-gray-200">
+                <div class="container mx-auto px-4 max-w-6xl">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl md:text-4xl font-black text-voldoBlack uppercase tracking-tight">¿Por qué elegir Grupo Voldo?</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <!-- Lado Izquierdo (Texto) -->
+                        <div>
+                            <h3 class="text-2xl md:text-3xl font-extrabold text-voldoBlack uppercase leading-snug mb-6">
+                                Somos una empresa <span class="text-voldoRed">100% Chiapaneca</span>, fundada y establecida en Tuxtla Gutiérrez y Comitán.
+                            </h3>
+                            <div class="space-y-4 text-gray-600 font-medium leading-relaxed">
+                                <p>Estamos creados para atender las necesidades crecientes del mercado regional. Vemos nuestro rol como un eslabón directo entre las mejores marcas del mundo y tu obra.</p>
+                                <p>Nos especializamos en venta y arrendamiento de camiones, transporte de carga, maquinaria de construcción (multimarca), refacciones, accesorios y construcción de obra civil.</p>
+                                <p class="font-bold text-voldoBlack border-l-4 border-voldoRed pl-4 mt-6">
+                                    Somos distribuidores oficiales de martillos hidráulicos marca SOOSAN.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Lado Derecho (Video) -->
+                        <div class="w-full aspect-video rounded shadow-2xl border-4 border-gray-100 bg-black relative">
+                            <iframe class="w-full h-full absolute inset-0" src="https://www.youtube.com/embed/cfb9h1Ex-IE?rel=0" title="Video Corporativo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-12 text-lg font-black uppercase text-voldoBlack tracking-widest">
+                        En servicio y confiabilidad, cuenta con <span class="text-voldoRed border-b-2 border-voldoRed pb-1">Grupo Voldo</span> cada vez.
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Bloque Oscuro Superpuesto (Peace of mind) -->
+            <section class="relative bg-voldoBlack py-24 md:py-32">
+                <!-- Imagen de fondo estática -->
+                <div class="absolute inset-0 z-0">
+                    <img src="https://placehold.co/1920x800/111/333?text=Maquinaria+Pesada+Fondo" class="w-full h-full object-cover opacity-40">
+                </div>
+                
+                <div class="container mx-auto px-4 relative z-10 flex justify-start">
+                    <!-- Recuadro negro/transparente -->
+                    <div class="bg-voldoBlack/90 border-l-[6px] border-voldoRed p-8 md:p-12 max-w-xl text-white shadow-2xl">
+                        <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tight mb-6">Tranquilidad en cada proyecto</h2>
+                        <p class="text-gray-300 font-medium leading-relaxed mb-6">
+                            Grupo Voldo brinda un enfoque integral para las operaciones de tu flota y maquinaria. A través de nuestro catálogo, nuestros clientes tienen la tranquilidad de acceder a inventario actualizado y soporte rápido.
+                        </p>
+                        <p class="text-gray-300 font-medium leading-relaxed">
+                            Contamos con una larga trayectoria en el mercado, empleando tecnología y operadores capacitados para gestionar una amplia red de vehículos y equipamiento pesado.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Fila de Beneficios (Iconos) -->
+            <section class="bg-white py-12 border-b border-gray-200">
+                <div class="container mx-auto px-4 max-w-5xl">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                        <div class="flex flex-col items-center p-4">
+                            <div class="w-12 h-12 bg-voldoRed rounded-full flex items-center justify-center text-white mb-4 shadow"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                            <h4 class="font-black text-voldoBlack uppercase tracking-wide text-sm mb-2">Respaldo Total</h4>
+                            <p class="text-xs text-gray-500">Mantenimiento y garantías directas.</p>
+                        </div>
+                        <div class="flex flex-col items-center p-4">
+                            <div class="w-12 h-12 bg-voldoRed rounded-full flex items-center justify-center text-white mb-4 shadow"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg></div>
+                            <h4 class="font-black text-voldoBlack uppercase tracking-wide text-sm mb-2">Soporte Directo</h4>
+                            <p class="text-xs text-gray-500">Llámanos a nuestra oficina local.</p>
+                        </div>
+                        <div class="flex flex-col items-center p-4">
+                            <div class="w-12 h-12 bg-voldoRed rounded-full flex items-center justify-center text-white mb-4 shadow"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg></div>
+                            <h4 class="font-black text-voldoBlack uppercase tracking-wide text-sm mb-2">Rendimiento</h4>
+                            <p class="text-xs text-gray-500">Equipos optimizados para el sureste.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. Banner Pre-Footer de Cotización -->
+            <section class="bg-voldoRed py-10">
+                <div class="container mx-auto px-4 flex flex-col md:flex-row items-center justify-center md:justify-between max-w-5xl gap-6">
+                    <h3 class="text-2xl font-black text-white uppercase tracking-widest text-center md:text-left">Ponte en contacto para una cotización gratuita</h3>
+                    <button onclick="cambiarPestana('sec-contacto')" class="bg-white text-voldoRed font-black px-10 py-4 uppercase tracking-widest text-sm hover:bg-gray-100 transition shadow-lg w-full md:w-auto">Contactar Ahora</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PESTAÑA 1: CATÁLOGO ==================== -->
+        <div id="sec-catalogo" class="seccion-vista hidden bg-gray-100">
+            <section class="bg-white pb-12 pt-12 relative shadow-sm border-b-4 border-voldoRed">
+                <div class="container mx-auto px-4 text-center">
+                    <h1 class="text-4xl font-black text-voldoBlack uppercase tracking-widest">Catálogo de <span class="text-voldoRed">Maquinaria</span></h1>
+                    <div class="w-24 h-1.5 bg-voldoRed mx-auto mt-6"></div>
+                    <p class="text-gray-500 mt-4 max-w-2xl mx-auto font-medium">Selecciona los equipos que necesitas y añádelos a tu lista de cotización.</p>
+                </div>
+            </section>
+            
+            <section class="container mx-auto px-4 py-8">
+                <div class="bg-white p-3 rounded-lg shadow-sm flex flex-wrap gap-2 justify-center border border-gray-200 mb-10 max-w-xl mx-auto">
+                    <button onclick="filtrarCatalogo('todos', this)" class="filtro-btn bg-voldoBlack text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider transition">Todo</button>
+                    <button onclick="filtrarCatalogo('venta', this)" class="filtro-btn bg-gray-100 text-gray-700 px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider hover:bg-gray-200 transition">Venta</button>
+                    <button onclick="filtrarCatalogo('renta', this)" class="filtro-btn bg-gray-100 text-gray-700 px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider hover:bg-gray-200 transition">Renta</button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="rejilla-catalogo"></div>
+            </section>
+        </div>
+
+        <!-- ==================== PESTAÑA 2: ARRENDAMIENTO ==================== -->
+        <div id="sec-arrendamiento" class="seccion-vista hidden bg-gray-100">
+            <section class="bg-voldoBlack text-white py-20 border-b-[6px] border-voldoRed">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="text-4xl font-black uppercase tracking-widest">Esquemas de <span class="text-voldoRed">Arrendamiento</span></h2>
+                    <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto">Renta de maquinaria pesada por día, semana o mes adaptada a tu obra.</p>
+                </div>
+            </section>
+            <section class="container mx-auto px-4 py-16">
+                <div class="bg-white p-10 rounded-xl shadow-lg border border-gray-100 max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-black mb-8 text-voldoBlack border-l-8 border-voldoRed pl-4 uppercase tracking-wide">Requisitos para Renta</h3>
+                    <ul class="space-y-6 text-gray-700 font-medium">
+                        <li class="flex items-start gap-4">
+                            <span class="bg-voldoRed text-white p-1 rounded"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
+                            <div><span class="font-black text-voldoBlack uppercase">Persona Moral:</span> Acta constitutiva, poder notarial, identificación vigente del representante.</div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="bg-voldoRed text-white p-1 rounded"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
+                            <div><span class="font-black text-voldoBlack uppercase">Persona Física:</span> Identificación oficial, comprobante de domicilio reciente.</div>
+                        </li>
+                        <li class="flex items-start gap-4">
+                            <span class="bg-voldoRed text-white p-1 rounded"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></span>
+                            <div><span class="font-black text-voldoBlack uppercase">Contrato:</span> Firma de contrato de arrendamiento y pagaré en garantía por el equipo.</div>
+                        </li>
+                    </ul>
+                    <div class="mt-12 text-center border-t border-gray-100 pt-8">
+                        <button onclick="cambiarPestana('sec-contacto')" class="bg-voldoBlack text-white px-10 py-4 font-black hover:bg-gray-800 transition shadow-lg uppercase tracking-widest text-sm">Contactar Asesor de Rentas</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PESTAÑA 3: REFACCIONES ==================== -->
+        <div id="sec-refacciones" class="seccion-vista hidden bg-gray-100">
+            <section class="bg-white py-16 border-b-4 border-voldoRed shadow-sm relative z-10">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="text-4xl font-black text-voldoBlack uppercase tracking-widest">Catálogo de <span class="text-voldoRed">Refacciones</span></h2>
+                    <div class="w-24 h-1.5 bg-voldoRed mx-auto my-6"></div>
+                    <p class="text-lg text-gray-500 max-w-2xl mx-auto font-medium">Selecciona la categoría para ver repuestos y añadirlos a tu cotización.</p>
+                </div>
+            </section>
+            
+            <section class="container mx-auto px-4 py-16">
+                <div id="refacciones-categorias" class="seccion-vista">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <!-- Tarjetas Refacciones (Actualizadas visualmente) -->
+                        <div onclick="abrirDetalleRefaccion('Filtros y Lubricantes')" class="cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col group">
+                            <div class="h-48 overflow-hidden relative"><img id="img-cat-filtros" src="https://placehold.co/400x300/333/666?text=Filtros" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></div>
+                            <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition tracking-widest flex-grow">Filtros y Lubricantes</div>
+                        </div>
+                        <div onclick="abrirDetalleRefaccion('Sistemas Hidráulicos')" class="cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col group">
+                            <div class="h-48 overflow-hidden relative"><img id="img-cat-hidraulicos" src="https://placehold.co/400x300/444/777?text=Hidraulicos" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></div>
+                            <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition tracking-widest flex-grow">Sis. Hidráulicos</div>
+                        </div>
+                        <div onclick="abrirDetalleRefaccion('Llantas y Orugas')" class="cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col group">
+                            <div class="h-48 overflow-hidden relative"><img id="img-cat-llantas" src="https://placehold.co/400x300/555/888?text=Llantas" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></div>
+                            <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition tracking-widest flex-grow">Llantas y Orugas</div>
+                        </div>
+                        <div onclick="abrirDetalleRefaccion('Partes Eléctricas')" class="cursor-pointer bg-white shadow-md hover:shadow-2xl transition duration-300 flex flex-col group">
+                            <div class="h-48 overflow-hidden relative"><img id="img-cat-electricas" src="https://placehold.co/400x300/222/555?text=Electricas" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"></div>
+                            <div class="bg-voldoBlack text-white text-center py-5 font-black uppercase text-sm group-hover:bg-voldoRed transition tracking-widest flex-grow">Partes Eléctricas</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="refacciones-detalle" class="hidden seccion-vista">
+                    <button onclick="volverRefacciones()" class="mb-10 text-voldoBlack font-black hover:text-voldoRed transition flex items-center gap-2 uppercase tracking-widest text-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg> Volver a Categorías
+                    </button>
+                    <h3 id="titulo-subcategoria" class="text-3xl md:text-4xl font-black text-voldoBlack uppercase mb-10 border-l-8 border-voldoRed pl-4 tracking-tight">Cargando...</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                        <!-- Ejemplo Pieza 1 -->
+                        <div class="bg-white shadow-md border border-gray-100 overflow-hidden flex flex-col group">
+                            <div class="h-48 bg-gray-100 relative overflow-hidden"><img src="https://placehold.co/400x300/e2e8f0/475569?text=Pieza+Premium" class="w-full h-full object-cover"></div>
+                            <div class="p-6 flex flex-col flex-1">
+                                <h4 class="font-black text-voldoBlack text-lg uppercase leading-tight mb-2">Set / Kit Premium</h4>
+                                <p class="text-xs font-bold text-voldoRed mb-4 uppercase tracking-wider">Multimarca</p>
+                                <button onclick="agregarAlCarrito('Set / Kit Premium Multimarca', 'Refacción', 'https://placehold.co/400x300/e2e8f0/475569?text=Pieza+Premium')" class="mt-auto w-full bg-voldoBlack text-white font-bold py-3 rounded-none flex items-center justify-center gap-2 hover:bg-voldoRed transition uppercase text-xs tracking-widest">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Añadir
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Ejemplo Pieza 2 -->
+                        <div class="bg-white shadow-md border border-gray-100 overflow-hidden flex flex-col group">
+                            <div class="h-48 bg-gray-100 relative overflow-hidden"><img src="https://placehold.co/400x300/e2e8f0/475569?text=Pieza+Reemplazo" class="w-full h-full object-cover"></div>
+                            <div class="p-6 flex flex-col flex-1">
+                                <h4 class="font-black text-voldoBlack text-lg uppercase leading-tight mb-2">Pieza de Reemplazo</h4>
+                                <p class="text-xs font-bold text-voldoRed mb-4 uppercase tracking-wider">Alta Durabilidad</p>
+                                <button onclick="agregarAlCarrito('Pieza de Reemplazo Alta Durabilidad', 'Refacción', 'https://placehold.co/400x300/e2e8f0/475569?text=Pieza+Reemplazo')" class="mt-auto w-full bg-voldoBlack text-white font-bold py-3 rounded-none flex items-center justify-center gap-2 hover:bg-voldoRed transition uppercase text-xs tracking-widest">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Añadir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== PESTAÑA 4: CONTACTO ==================== -->
+        <div id="sec-contacto" class="seccion-vista hidden bg-gray-100">
+            <section class="bg-voldoBlack text-white py-20 border-b-[6px] border-voldoRed">
+                <div class="container mx-auto px-4 text-center">
+                    <h2 class="text-4xl font-black uppercase tracking-widest">Directorio de <span class="text-voldoRed">Contacto</span></h2>
+                    <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto">Comunícate directamente con nuestros asesores especializados o envía tu solicitud.</p>
+                </div>
+            </section>
+            <section class="container mx-auto px-4 py-16">
+                <div class="mb-16">
+                    <h3 class="text-2xl font-black mb-8 text-voldoBlack border-l-8 border-voldoRed pl-4 uppercase tracking-wide">Ventas</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                        <div class="bg-white p-8 shadow-md border-t-4 border-voldoRed"><div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-6 text-xl">👤</div><h4 class="font-black text-xl text-voldoBlack uppercase">Lic. Juan Pérez</h4><p class="text-xs text-voldoRed font-bold mb-4 uppercase tracking-widest">Ejecutivo de Ventas</p><a href="tel:+529610000001" class="block text-gray-600 text-sm mb-2 hover:text-voldoRed font-bold">📞 961 000 0001</a><a id="display-correo-ventas1" href="mailto:ventas1@grupovoldo.com" class="block text-gray-500 text-sm hover:text-voldoRed">✉️ ventas1@grupovoldo.com</a></div>
+                        <div class="bg-white p-8 shadow-md border-t-4 border-voldoRed"><div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-6 text-xl">👤</div><h4 class="font-black text-xl text-voldoBlack uppercase">Ing. Sofía Martínez</h4><p class="text-xs text-voldoRed font-bold mb-4 uppercase tracking-widest">Ejecutiva de Ventas</p><a href="tel:+529610000002" class="block text-gray-600 text-sm mb-2 hover:text-voldoRed font-bold">📞 961 000 0002</a><a id="display-correo-ventas2" href="mailto:ventas2@grupovoldo.com" class="block text-gray-500 text-sm hover:text-voldoRed">✉️ ventas2@grupovoldo.com</a></div>
+                        <div class="bg-white p-8 shadow-md border-t-4 border-voldoRed"><div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-6 text-xl">👤</div><h4 class="font-black text-xl text-voldoBlack uppercase">Lic. Roberto Gómez</h4><p class="text-xs text-voldoRed font-bold mb-4 uppercase tracking-widest">Ejecutivo de Ventas</p><a href="tel:+529610000003" class="block text-gray-600 text-sm mb-2 hover:text-voldoRed font-bold">📞 961 000 0003</a><a id="display-correo-ventas3" href="mailto:ventas3@grupovoldo.com" class="block text-gray-500 text-sm hover:text-voldoRed">✉️ ventas3@grupovoldo.com</a></div>
+                    </div>
+                    <h3 class="text-2xl font-black mb-8 text-voldoBlack border-l-8 border-voldoRed pl-4 uppercase tracking-wide">Arrendamiento</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="bg-white p-8 shadow-md border-t-4 border-voldoBlack"><div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-6 text-xl">👤</div><h4 class="font-black text-xl text-voldoBlack uppercase">Lic. Ana Díaz</h4><p class="text-xs text-gray-500 font-bold mb-4 uppercase tracking-widest">Asesora de Rentas</p><a href="tel:+529610000004" class="block text-gray-600 text-sm mb-2 hover:text-voldoRed font-bold">📞 961 000 0004</a><a id="display-correo-rentas1" href="mailto:rentas1@grupovoldo.com" class="block text-gray-500 text-sm hover:text-voldoRed">✉️ rentas1@grupovoldo.com</a></div>
+                        <div class="bg-white p-8 shadow-md border-t-4 border-voldoBlack"><div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-6 text-xl">👤</div><h4 class="font-black text-xl text-voldoBlack uppercase">Ing. Carlos Ruíz</h4><p class="text-xs text-gray-500 font-bold mb-4 uppercase tracking-widest">Asesor de Rentas</p><a href="tel:+529610000005" class="block text-gray-600 text-sm mb-2 hover:text-voldoRed font-bold">📞 961 000 0005</a><a id="display-correo-rentas2" href="mailto:rentas2@grupovoldo.com" class="block text-gray-500 text-sm hover:text-voldoRed">✉️ rentas2@grupovoldo.com</a></div>
+                        <div class="bg-white p-8 shadow-md border-t-4 border-voldoBlack"><div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center mb-6 text-xl">👤</div><h4 class="font-black text-xl text-voldoBlack uppercase">Lic. Valeria López</h4><p class="text-xs text-gray-500 font-bold mb-4 uppercase tracking-widest">Asesora de Rentas</p><a href="tel:+529610000006" class="block text-gray-600 text-sm mb-2 hover:text-voldoRed font-bold">📞 961 000 0006</a><a id="display-correo-rentas3" href="mailto:rentas3@grupovoldo.com" class="block text-gray-500 text-sm hover:text-voldoRed">✉️ rentas3@grupovoldo.com</a></div>
+                    </div>
+                </div>
+                
+                <div class="w-full max-w-4xl mx-auto bg-voldoBlack p-10 md:p-14 shadow-2xl relative" id="contenedor-formulario">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-voldoRed"></div>
+                    <h3 class="text-3xl font-black mb-2 text-white uppercase tracking-widest">Buzón de <span class="text-voldoRed">Cotizaciones</span></h3>
+                    <p class="text-gray-400 mb-8 font-medium">Déjanos tus datos. Si armaste una lista en tu carrito, ya estará incluida abajo.</p>
+                    <form class="space-y-6" onsubmit="event.preventDefault(); alert('¡Mensaje enviado a Grupo Voldo!');">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Nombre / Empresa</label><input type="text" class="w-full border-0 p-4 bg-white/10 text-white focus:bg-white focus:text-black outline-none transition" required></div>
+                            <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Teléfono</label><input type="tel" class="w-full border-0 p-4 bg-white/10 text-white focus:bg-white focus:text-black outline-none transition" required></div>
+                        </div>
+                        <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Correo Electrónico</label><input type="email" class="w-full border-0 p-4 bg-white/10 text-white focus:bg-white focus:text-black outline-none transition" required></div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Asunto</label>
+                            <select id="contacto-asunto" class="w-full border-0 p-4 bg-white/10 text-white focus:bg-white focus:text-black outline-none transition appearance-none">
+                                <option class="text-black">Cotización Múltiple (Lista de Carrito)</option>
+                                <option class="text-black">Cotización de Venta</option>
+                                <option class="text-black">Cotización de Arrendamiento</option>
+                                <option class="text-black">Solicitud de Refacciones</option>
+                                <option class="text-black">Soporte Técnico</option>
+                            </select>
+                        </div>
+                        <div><label class="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Mensaje</label><textarea id="contacto-mensaje" class="w-full border-0 p-4 bg-white/10 text-white focus:bg-white focus:text-black outline-none h-48 transition" required placeholder="Escribe aquí..."></textarea></div>
+                        <button type="submit" class="w-full bg-voldoRed text-white font-black py-5 hover:bg-red-800 transition uppercase tracking-widest text-sm">Enviar Solicitud</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER CORPORATIVO -->
+    <footer class="bg-voldoBlack text-white pt-16 pb-8 border-t-4 border-gray-800">
+        <div class="container mx-auto px-4 max-w-6xl">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-white p-1 rounded w-10 h-10 flex items-center justify-center"><img src="logo-voldo.png" class="w-full h-full object-contain"></div>
+                        <span class="text-2xl font-black tracking-widest uppercase">Grupo <span class="text-voldoRed">Voldo</span></span>
+                    </div>
+                    <p class="text-gray-500 text-sm font-medium leading-relaxed max-w-sm">
+                        Tu socio logístico confiable en venta y arrendamiento de maquinaria pesada. Servicio, calidad y respaldo 100% chiapaneco.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-black uppercase tracking-widest text-voldoRed mb-6">Navegación</h4>
+                    <ul class="space-y-3 text-sm text-gray-400 font-bold uppercase tracking-wider">
+                        <li><button onclick="cambiarPestana('sec-inicio')" class="hover:text-white transition">Inicio</button></li>
+                        <li><button onclick="cambiarPestana('sec-catalogo')" class="hover:text-white transition">Catálogo</button></li>
+                        <li><button onclick="cambiarPestana('sec-arrendamiento')" class="hover:text-white transition">Arrendamiento</button></li>
+                        <li><button onclick="cambiarPestana('sec-contacto')" class="hover:text-white transition">Contacto</button></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-black uppercase tracking-widest text-voldoRed mb-6">Síguenos</h4>
+                    <div class="flex gap-4">
+                        <a id="link-fb" href="#" target="_blank" class="w-10 h-10 border border-gray-700 flex items-center justify-center hover:bg-voldoRed hover:border-voldoRed transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg></a>
+                        <a id="link-ig" href="#" target="_blank" class="w-10 h-10 border border-gray-700 flex items-center justify-center hover:bg-voldoRed hover:border-voldoRed transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" /></svg></a>
+                        <a id="link-wa" href="#" target="_blank" class="w-10 h-10 border border-gray-700 flex items-center justify-center hover:bg-voldoRed hover:border-voldoRed transition"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs font-bold uppercase tracking-widest text-gray-600">
+                <p>© 2026 Grupo Voldo. Todos los derechos reservados.</p>
+                <p class="mt-2 md:mt-0">Tuxtla Gutiérrez, Chiapas.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // CARRITO LÓGICA
+        let carritoCotizacion = JSON.parse(localStorage.getItem('voldoCarrito')) || [];
+        function toggleCarrito() { document.getElementById('carrito-lateral').classList.toggle('translate-x-full'); document.getElementById('carrito-overlay').classList.toggle('hidden'); renderizarCarrito(); }
+        function agregarAlCarrito(titulo, categoria, foto) { carritoCotizacion.push({ titulo, categoria, foto }); localStorage.setItem('voldoCarrito', JSON.stringify(carritoCotizacion)); actualizarBadgeCarrito(); const panel = document.getElementById('carrito-lateral'); if(panel.classList.contains('translate-x-full')) toggleCarrito(); else renderizarCarrito(); }
+        function eliminarDelCarrito(index) { carritoCotizacion.splice(index, 1); localStorage.setItem('voldoCarrito', JSON.stringify(carritoCotizacion)); renderizarCarrito(); actualizarBadgeCarrito(); }
+        function actualizarBadgeCarrito() { const badge = document.getElementById('badge-carrito'); if(carritoCotizacion.length > 0) { badge.innerText = carritoCotizacion.length; badge.classList.remove('hidden'); } else badge.classList.add('hidden'); }
+        function renderizarCarrito() {
+            const contenedor = document.getElementById('contenido-carrito'); contenedor.innerHTML = '';
+            if(carritoCotizacion.length === 0) { contenedor.innerHTML = `<div class="flex flex-col items-center justify-center h-full text-gray-400 mt-10"><p class="font-bold text-lg text-gray-500">Tu lista está vacía.</p></div>`; return; }
+            carritoCotizacion.forEach((item, index) => {
+                const colorTag = item.categoria.toLowerCase() === 'venta' ? 'bg-voldoRed text-white' : item.categoria.toLowerCase() === 'renta' ? 'bg-voldoBlack text-white' : 'bg-gray-200 text-gray-700';
+                contenedor.innerHTML += `
+                    <div class="flex gap-4 border-b border-gray-200 pb-4 items-center bg-white p-3 rounded-lg shadow-sm relative pr-10">
+                        <img src="${item.foto}" class="w-16 h-16 object-cover rounded bg-gray-100 border">
+                        <div class="flex-1 leading-tight"><h4 class="font-bold text-sm text-voldoBlack mb-1 leading-snug">${item.titulo}</h4><span class="text-[10px] ${colorTag} px-2 py-0.5 rounded font-bold uppercase">${item.categoria}</span></div>
+                        <button onclick="eliminarDelCarrito(${index})" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition p-2">❌</button>
+                    </div>`;
+            });
+        }
+        function prepararCotizacionYEnviar() {
+            if(carritoCotizacion.length === 0) { alert("Agrega equipos primero."); return; }
+            toggleCarrito(); cambiarPestana('sec-contacto');
+            let listaTexto = "Hola Grupo Voldo,\n\nMe interesa cotizar:\n\n";
+            carritoCotizacion.forEach((item, i) => { listaTexto += `  ${i + 1}. ${item.titulo} (${item.categoria})\n`; });
+            document.getElementById('contacto-asunto').value = "Cotización Múltiple (Lista de Carrito)";
+            const textarea = document.getElementById('contacto-mensaje'); textarea.value = listaTexto;
+            setTimeout(() => { document.getElementById('contenedor-formulario').scrollIntoView({ behavior: 'smooth', block: 'center' }); textarea.classList.add('enfocado'); setTimeout(() => textarea.classList.remove('enfocado'), 1500); }, 300);
+        }
+
+        // MENÚ Y NAVEGACIÓN
+        document.getElementById('btn-menu-movil').addEventListener('click', () => { document.getElementById('menu-movil').classList.toggle('hidden'); });
+        let indiceCarrusel = 0; setInterval(() => { const track = document.getElementById('carrusel'); if(track) { indiceCarrusel++; if (indiceCarrusel >= 6) indiceCarrusel = 0; track.style.transform = `translateX(-${indiceCarrusel * 100}%)`; } }, 4000);
+        
+        function cambiarPestana(idSeccion, btnClickeado = null) {
+            document.querySelectorAll('.seccion-vista').forEach(sec => sec.classList.add('hidden')); document.getElementById(idSeccion).classList.remove('hidden');
+            const botones = document.querySelectorAll('.pestana-btn'); botones.forEach(btn => { btn.classList.remove('text-voldoRed'); btn.classList.add('text-gray-300'); });
+            if (btnClickeado && btnClickeado.classList.contains('pestana-btn')) { const textoBoton = btnClickeado.innerText.trim(); botones.forEach(btn => { if(btn.innerText.trim() === textoBoton) { btn.classList.remove('text-gray-300'); btn.classList.add('text-voldoRed'); } }); }
+            if(idSeccion === 'sec-refacciones') volverRefacciones(); document.getElementById('menu-movil').classList.add('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function abrirDetalleRefaccion(nombreCategoria) { document.getElementById('refacciones-categorias').classList.add('hidden'); document.getElementById('refacciones-detalle').classList.remove('hidden'); document.getElementById('titulo-subcategoria').innerText = nombreCategoria; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function volverRefacciones() { const vd = document.getElementById('refacciones-detalle'); const vc = document.getElementById('refacciones-categorias'); if(vd && vc) { vd.classList.add('hidden'); vc.classList.remove('hidden'); } }
+        function filtrarCatalogo(categoria, btnClickeado) {
+            document.querySelectorAll('.item-catalogo').forEach(item => { item.style.display = (categoria === 'todos' || item.dataset.categoria === categoria) ? 'block' : 'none'; });
+            document.querySelectorAll('.filtro-btn').forEach(btn => btn.className = 'filtro-btn bg-gray-100 text-gray-700 px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider hover:bg-gray-200 transition');
+            btnClickeado.className = 'filtro-btn bg-voldoBlack text-white px-6 py-2.5 rounded font-bold text-xs uppercase tracking-wider transition shadow';
+        }
+
+        // CARGAR DATOS DESDE ADMIN
+        window.addEventListener('DOMContentLoaded', () => {
+            actualizarBadgeCarrito();
+            const config = JSON.parse(localStorage.getItem('voldoConfigWeb'));
+            if(config) {
+                if(config.fb) document.getElementById('link-fb').href = config.fb;
+                if(config.ig) document.getElementById('link-ig').href = config.ig;
+                if(config.wa) document.getElementById('link-wa').href = "https://wa.me/" + config.wa.replace(/\D/g,'');
+                if(config.correoVentas) { for(let i=1; i<=3; i++) { let aTag = document.getElementById('display-correo-ventas' + i); if(aTag) { aTag.href = "mailto:" + config.correoVentas; aTag.innerText = "✉️ " + config.correoVentas; } } }
+                if(config.correoRentas) { for(let i=1; i<=3; i++) { let aTag = document.getElementById('display-correo-rentas' + i); if(aTag) { aTag.href = "mailto:" + config.correoRentas; aTag.innerText = "✉️ " + config.correoRentas; } } }
+            }
+
+            const rejilla = document.getElementById('rejilla-catalogo');
+            const equipos = JSON.parse(localStorage.getItem('voldoEquipos')) || [];
+            if(equipos.length > 0) rejilla.innerHTML = ''; 
+            equipos.forEach(eq => {
+                const bgEtiqueta = eq.categoria === 'venta' ? 'bg-voldoRed' : 'bg-voldoBlack';
+                const tituloSeguro = eq.titulo.replace(/'/g, "\\'"); 
+                rejilla.innerHTML += `
+                <div class="item-catalogo bg-white shadow-md border border-gray-100 overflow-hidden flex flex-col group" data-categoria="${eq.categoria}">
+                    <div class="relative h-56 bg-gray-200"><img src="${eq.foto}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"><div class="absolute top-3 right-3 ${bgEtiqueta} text-white text-xs font-black px-3 py-1.5 uppercase tracking-widest shadow">${eq.categoria}</div></div>
+                    <div class="p-6 flex flex-col flex-1"><h3 class="font-black text-xl text-voldoBlack mb-1 uppercase leading-tight">${eq.titulo}</h3><p class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">${eq.modelo}</p><p class="text-sm text-gray-600 mb-6 flex-1">${eq.descripcion}</p><button onclick="agregarAlCarrito('${tituloSeguro}', '${eq.categoria}', '${eq.foto}')" class="mt-auto w-full bg-voldoBlack text-white font-bold py-3 rounded-none flex items-center justify-center gap-2 hover:bg-voldoRed transition uppercase text-xs tracking-widest"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Añadir</button></div>
+                </div>`;
+            });
+
+            const cData = JSON.parse(localStorage.getItem('voldoCarrusel'));
+            if(cData) { for(let i=1; i<=6; i++) { if(cData[`slide${i}`]) document.getElementById(`img-carrusel-${i}`).src = cData[`slide${i}`]; } }
+
+            const rData = JSON.parse(localStorage.getItem('voldoRefaccionesCats'));
+            if(rData) {
+                if(rData.filtros) document.getElementById('img-cat-filtros').src = rData.filtros;
+                if(rData.hidraulicos) document.getElementById('img-cat-hidraulicos').src = rData.hidraulicos;
+                if(rData.llantas) document.getElementById('img-cat-llantas').src = rData.llantas;
+                if(rData.electricas) document.getElementById('img-cat-electricas').src = rData.electricas;
+            }
+        });
+    </script>
+</body>
+</html>

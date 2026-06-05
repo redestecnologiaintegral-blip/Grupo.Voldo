@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Maestro | Grupo Voldo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        voldoRed: '#cc0000',
+                        voldoBlack: '#111111',
+                        voldoDark: '#1a1a1a',
+                        voldoGray: '#f3f4f6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .seccion-admin { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-voldoGray font-sans h-screen flex overflow-hidden text-gray-800">
+
+    <aside class="w-72 bg-voldoDark text-white flex flex-col h-full shadow-2xl z-20 border-r border-gray-800">
+        <div class="p-6 border-b border-gray-800 flex items-center gap-4">
+            <div class="bg-white p-1 rounded-lg w-14 h-14 flex items-center justify-center">
+                <img src="logo-voldo.png" alt="Grupo Voldo" class="w-full h-full object-contain">
+            </div>
+            <div class="flex flex-col leading-tight">
+                <span class="text-2xl font-black tracking-wide text-white">VOLDO</span>
+                <span class="text-xl font-black tracking-wide text-voldoRed">ADMIN</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-4 py-8 space-y-2 font-medium text-[14px]">
+            <button onclick="cambiarPestanaAdmin('sec-catalogo', this)" class="btn-admin block w-full text-left px-5 py-3.5 rounded-md bg-voldoRed text-white shadow-md transition duration-200">
+                🚜 Inventario y Catálogo
+            </button>
+            <button onclick="cambiarPestanaAdmin('sec-imagenes', this)" class="btn-admin block w-full text-left px-5 py-3.5 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition duration-200">
+                🖼️ Imágenes y Carrusel
+            </button>
+            <button onclick="cambiarPestanaAdmin('sec-textos', this)" class="btn-admin block w-full text-left px-5 py-3.5 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition duration-200">
+                📝 Textos de la Página
+            </button>
+            <button onclick="cambiarPestanaAdmin('sec-config', this)" class="btn-admin block w-full text-left px-5 py-3.5 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition duration-200">
+                ⚙️ Configuración Web
+            </button>
+            <button onclick="cambiarPestanaAdmin('sec-solicitudes', this)" class="btn-admin block w-full text-left px-5 py-3.5 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition duration-200">
+                💬 Solicitudes (Buzón)
+            </button>
+        </nav>
+
+        <div class="p-6 border-t border-gray-800 space-y-4">
+            <a href="index.html" class="flex items-center justify-center gap-2 w-full px-4 py-3 border border-gray-600 rounded-md text-gray-300 hover:bg-gray-800 transition">
+                👁️ Ver Web Pública
+            </a>
+            <button class="flex items-center justify-center gap-2 w-full px-4 py-3 text-red-500 hover:text-red-400 font-bold transition">
+                🚪 Cerrar Sesión
+            </button>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-full bg-voldoGray overflow-y-auto">
+        <header class="bg-white p-4 shadow-sm border-b flex justify-between items-center sticky top-0 z-10">
+            <h2 id="titulo-header" class="text-xl font-extrabold text-voldoBlack uppercase tracking-tight">Inventario y Catálogo</h2>
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-semibold text-gray-600">Administrador RTI</span>
+                <div class="w-10 h-10 bg-gray-200 rounded-full border-2 border-voldoRed flex items-center justify-center font-bold text-gray-700 shadow-sm">A</div>
+            </div>
+        </header>
+
+        <div class="p-8">
+            
+            <div id="sec-catalogo" class="seccion-admin">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 space-y-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                            <h3 class="font-extrabold mb-4 uppercase text-voldoBlack text-lg border-l-4 border-voldoRed pl-3">Agregar Equipo</h3>
+                            <form id="form-maquinaria" class="space-y-4">
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Título del Equipo</label><input type="text" id="val-titulo" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoRed outline-none" required></div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Categoría</label><select id="val-categoria" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoRed outline-none" required><option value="venta">Venta</option><option value="renta">Arrendamiento</option></select></div>
+                                    <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Marca / Modelo</label><input type="text" id="val-modelo" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoRed outline-none" required></div>
+                                </div>
+                                <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Descripción Corta</label><textarea id="val-descripcion" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoRed outline-none h-20" required></textarea></div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Fotografía</label>
+                                    <div id="zona-subida" class="border-2 border-dashed border-gray-300 rounded h-32 flex items-center justify-center text-center hover:bg-gray-50 transition cursor-pointer overflow-hidden relative">
+                                        <p id="texto-subida" class="text-sm text-gray-500 p-4">Haz clic para subir imagen</p>
+                                        <input type="file" id="input-foto" class="hidden" accept="image/*">
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full bg-voldoRed text-white font-bold py-3 rounded shadow hover:bg-red-800 transition uppercase tracking-wide">Guardar Equipo</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2">
+                        <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 h-full">
+                            <h3 class="font-extrabold uppercase text-voldoBlack text-lg border-l-4 border-voldoRed pl-3 mb-6">Equipos Registrados</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="rejilla-catalogo">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec-imagenes" class="seccion-admin hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-xl border-l-4 border-voldoBlack pl-4">Imágenes del Carrusel (Inicio)</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Slide 1</label><input type="file" id="input-slide-1" class="w-full border p-1 rounded text-sm bg-gray-50" accept="image/*"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Slide 2</label><input type="file" id="input-slide-2" class="w-full border p-1 rounded text-sm bg-gray-50" accept="image/*"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Slide 3</label><input type="file" id="input-slide-3" class="w-full border p-1 rounded text-sm bg-gray-50" accept="image/*"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Slide 4</label><input type="file" id="input-slide-4" class="w-full border p-1 rounded text-sm bg-gray-50" accept="image/*"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Slide 5</label><input type="file" id="input-slide-5" class="w-full border p-1 rounded text-sm bg-gray-50" accept="image/*"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Slide 6</label><input type="file" id="input-slide-6" class="w-full border p-1 rounded text-sm bg-gray-50" accept="image/*"></div>
+                        </div>
+                        <button id="btn-guardar-carrusel" class="mt-6 w-full bg-voldoBlack text-white font-bold py-3 rounded shadow hover:bg-gray-800 transition uppercase tracking-wide">Actualizar Carrusel</button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-xl border-l-4 border-voldoBlack pl-4">Fondos de Secciones</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1 uppercase">Fondo Sección "Tranquilidad en cada proyecto"</label>
+                                <p class="text-xs text-gray-500 mb-2">Recomendado: Imagen oscura o industrial ancha.</p>
+                                <input type="file" id="input-fondo-promesa" class="w-full border p-2 rounded text-sm bg-gray-50" accept="image/*">
+                            </div>
+                        </div>
+                        <button id="btn-guardar-fondos" class="mt-6 w-full bg-voldoBlack text-white font-bold py-3 rounded shadow hover:bg-gray-800 transition uppercase tracking-wide">Guardar Fondos</button>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 md:col-span-2">
+                        <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-xl border-l-4 border-voldoRed pl-4">Fotos: Categorías de Refacciones</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div><label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Filtros y Lubricantes</label><input type="file" id="cat-filtros" accept="image/*" class="w-full border p-1 rounded text-sm bg-gray-50"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Sis. Hidráulicos</label><input type="file" id="cat-hidraulicos" accept="image/*" class="w-full border p-1 rounded text-sm bg-gray-50"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Llantas y Orugas</label><input type="file" id="cat-llantas" accept="image/*" class="w-full border p-1 rounded text-sm bg-gray-50"></div>
+                            <div><label class="block text-xs font-bold text-gray-700 mb-2 uppercase">Partes Eléctricas</label><input type="file" id="cat-electricas" accept="image/*" class="w-full border p-1 rounded text-sm bg-gray-50"></div>
+                        </div>
+                        <button id="btn-guardar-cats-refacciones" class="mt-6 w-full bg-voldoRed text-white font-bold py-3 rounded shadow hover:bg-red-800 transition uppercase">Guardar Imágenes de Categorías</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec-textos" class="seccion-admin hidden">
+                <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 mb-8">
+                    <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-xl border-l-4 border-voldoRed pl-4">Editar Textos de la Página de Inicio</h3>
+                    <p class="text-sm text-gray-500 mb-8">Escribe el contenido que quieres que aparezca en tu página pública. Deja en blanco si quieres mantener el texto por defecto.</p>
+                    
+                    <form id="form-textos" class="space-y-10">
+                        <div class="bg-gray-50 p-6 rounded border border-gray-200">
+                            <h4 class="font-bold text-gray-800 uppercase mb-4">1. Textos del Carrusel Principal</h4>
+                            <div class="space-y-4">
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Título Grande (Color Blanco)</label><input type="text" id="t-hero-1" class="w-full border p-2 rounded focus:border-voldoRed outline-none" placeholder="Ej: Fuerza y maquinaria"></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Título Grande (Color Gris)</label><input type="text" id="t-hero-2" class="w-full border p-2 rounded focus:border-voldoRed outline-none" placeholder="Ej: para tus proyectos"></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Párrafo Descriptivo</label><textarea id="t-hero-desc" class="w-full border p-2 rounded h-20 focus:border-voldoRed outline-none" placeholder="Especialistas en venta..."></textarea></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded border border-gray-200">
+                            <h4 class="font-bold text-gray-800 uppercase mb-4">2. Sección "Quiénes Somos"</h4>
+                            <div class="space-y-4">
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Título de la sección</label><input type="text" id="t-nos-titulo" class="w-full border p-2 rounded focus:border-voldoRed outline-none" placeholder="Somos una empresa 100% Chiapaneca..."></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Párrafo Principal</label><textarea id="t-nos-desc" class="w-full border p-2 rounded h-24 focus:border-voldoRed outline-none" placeholder="Estamos creados para atender..."></textarea></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-6 rounded border border-gray-200">
+                            <h4 class="font-bold text-gray-800 uppercase mb-4">3. Sección "Fondo Oscuro"</h4>
+                            <div class="space-y-4">
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Título del Recuadro</label><input type="text" id="t-promesa-titulo" class="w-full border p-2 rounded focus:border-voldoRed outline-none" placeholder="Tranquilidad en cada proyecto"></div>
+                                <div><label class="block text-sm font-bold text-gray-700 mb-1">Texto del Recuadro</label><textarea id="t-promesa-desc" class="w-full border p-2 rounded h-24 focus:border-voldoRed outline-none" placeholder="Grupo Voldo brinda un enfoque integral..."></textarea></div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="btn-guardar-textos" class="w-full bg-voldoRed text-white font-bold py-4 rounded shadow hover:bg-red-800 transition uppercase tracking-widest text-lg">Guardar Todos Los Textos</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="sec-config" class="seccion-admin hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-xl border-l-4 border-voldoBlack pl-4">Redes Sociales</h3>
+                        <form class="space-y-4">
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">Enlace de Facebook</label><input type="url" id="input-fb" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoBlack outline-none" placeholder="https://facebook.com/grupovoldo"></div>
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">Enlace de Instagram</label><input type="url" id="input-ig" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoBlack outline-none" placeholder="https://instagram.com/grupovoldo"></div>
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">Número de WhatsApp (Ventas)</label><input type="text" id="input-wa" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoBlack outline-none" placeholder="529610000000"></div>
+                            <button type="button" id="btn-guardar-redes" class="mt-4 bg-voldoBlack text-white font-bold py-2.5 px-6 rounded-md shadow hover:bg-gray-800 transition text-sm">Guardar Cambios</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                        <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-xl border-l-4 border-voldoBlack pl-4">Correos y Video</h3>
+                        <form class="space-y-4">
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo para Ventas</label><input type="email" id="input-correo-ventas" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoBlack outline-none" placeholder="ventas@grupovoldo.com"></div>
+                            <div><label class="block text-sm font-bold text-gray-700 mb-1">Correo para Arrendamiento</label><input type="email" id="input-correo-rentas" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoBlack outline-none" placeholder="rentas@grupovoldo.com"></div>
+                            <hr class="my-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Link de Video en Página Principal</label>
+                                <p class="text-xs text-gray-500 mb-2">Pega el link normal de YouTube (Ej: https://www.youtube.com/watch?v=...)</p>
+                                <input type="url" id="input-video" class="w-full border p-2 rounded bg-gray-50 focus:border-voldoBlack outline-none" placeholder="https://www.youtube.com/watch?v=cfb9h1Ex-IE">
+                            </div>
+                            <button type="button" id="btn-guardar-correos" class="mt-4 bg-voldoBlack text-white font-bold py-2.5 px-6 rounded-md shadow hover:bg-gray-800 transition text-sm">Guardar Cambios</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sec-solicitudes" class="seccion-admin hidden">
+                <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200">
+                    <h3 class="font-extrabold mb-6 uppercase text-voldoBlack text-2xl border-l-4 border-voldoRed pl-4">Bandeja de Mensajes Recibidos</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-gray-100 text-gray-700 text-sm uppercase"><th class="p-4 border-b">Fecha</th><th class="p-4 border-b">Cliente</th><th class="p-4 border-b">Asunto</th><th class="p-4 border-b">Contacto</th><th class="p-4 border-b">Acción</th></tr></thead>
+                            <tbody class="text-sm">
+                                <tr class="hover:bg-gray-50 border-b"><td class="p-4 text-gray-500">04 Jun 2026</td><td class="p-4 font-bold text-voldoBlack">Constructora del Sur</td><td class="p-4"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded text-xs font-bold">Arrendamiento</span></td><td class="p-4">961 123 4567</td><td class="p-4"><button class="text-voldoRed font-bold hover:underline">Ver</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // --- NAVEGACIÓN DEL PANEL ---
+        function cambiarPestanaAdmin(idSeccion, btnClickeado) {
+            document.querySelectorAll('.seccion-admin').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(idSeccion).classList.remove('hidden');
+            document.querySelectorAll('.btn-admin').forEach(btn => { btn.className = 'btn-admin block w-full text-left px-5 py-3.5 rounded-md text-gray-300 hover:bg-gray-800 hover:text-white transition duration-200'; });
+            btnClickeado.className = 'btn-admin block w-full text-left px-5 py-3.5 rounded-md bg-voldoRed text-white shadow-md transition duration-200';
+            document.getElementById('titulo-header').innerText = btnClickeado.innerText.trim().substring(3);
+        }
+
+        const convertirABase64 = (archivo) => {
+            return new Promise((resolve, reject) => {
+                const lector = new FileReader(); lector.readAsDataURL(archivo);
+                lector.onload = () => resolve(lector.result); lector.onerror = (error) => reject(error);
+            });
+        };
+
+        // --- CARGAR DATOS AL INICIAR EL ADMIN ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Cargar Configuración Web
+            const config = JSON.parse(localStorage.getItem('voldoConfigWeb'));
+            if(config) {
+                if(config.fb) document.getElementById('input-fb').value = config.fb;
+                if(config.ig) document.getElementById('input-ig').value = config.ig;
+                if(config.wa) document.getElementById('input-wa').value = config.wa;
+                if(config.correoVentas) document.getElementById('input-correo-ventas').value = config.correoVentas;
+                if(config.correoRentas) document.getElementById('input-correo-rentas').value = config.correoRentas;
+                if(config.video) document.getElementById('input-video').value = config.video;
+            }
+
+            // Cargar Textos
+            const textos = JSON.parse(localStorage.getItem('voldoTextos'));
+            if(textos) {
+                if(textos.h1) document.getElementById('t-hero-1').value = textos.h1;
+                if(textos.h2) document.getElementById('t-hero-2').value = textos.h2;
+                if(textos.hDesc) document.getElementById('t-hero-desc').value = textos.hDesc;
+                if(textos.nTit) document.getElementById('t-nos-titulo').value = textos.nTit;
+                if(textos.nDesc) document.getElementById('t-nos-desc').value = textos.nDesc;
+                if(textos.pTit) document.getElementById('t-promesa-titulo').value = textos.pTit;
+                if(textos.pDesc) document.getElementById('t-promesa-desc').value = textos.pDesc;
+            }
+
+            // Cargar lista visual de equipos
+            cargarEquiposEnAdmin();
+        });
+
+        // --- FUNCIÓN DE LECTURA DE EQUIPOS EN ADMIN ---
+        function cargarEquiposEnAdmin() {
+            const rejilla = document.getElementById('rejilla-catalogo');
+            const equipos = JSON.parse(localStorage.getItem('voldoEquipos')) || [];
+            
+            if (equipos.length === 0) {
+                rejilla.innerHTML = `<p class="text-gray-400 text-sm col-span-full">No hay equipos registrados todavía.</p>`;
+                return;
+            }
+            
+            rejilla.innerHTML = ''; 
+            equipos.forEach((eq, index) => {
+                rejilla.innerHTML += `
+                <div class="border rounded-lg overflow-hidden group flex flex-col shadow-sm bg-white hover:shadow-md transition">
+                    <div class="h-32 bg-gray-200 relative">
+                        <img src="${eq.foto}" class="w-full h-full object-cover">
+                        <div class="absolute top-2 right-2 bg-voldoBlack text-white text-[10px] font-bold px-2 py-1 rounded shadow">${eq.categoria.toUpperCase()}</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 flex flex-col flex-1">
+                        <p class="font-bold text-sm text-voldoBlack truncate mb-1" title="${eq.titulo}">${eq.titulo}</p>
+                        <p class="text-xs text-gray-500 truncate flex-1 mb-3">${eq.modelo}</p>
+                        
+                        <button onclick="eliminarEquipo(${index})" class="mt-auto w-full bg-red-100 text-voldoRed hover:bg-voldoRed hover:text-white font-bold py-2 rounded transition text-xs flex items-center justify-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            Eliminar
+                        </button>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // --- FUNCIÓN DE ELIMINAR EQUIPO ---
+        function eliminarEquipo(index) {
+            const confirmacion = confirm("¿Estás seguro de que deseas eliminar este equipo del catálogo? Esta acción no se puede deshacer.");
+            if(confirmacion) {
+                let equipos = JSON.parse(localStorage.getItem('voldoEquipos')) || [];
+                equipos.splice(index, 1); // Borra 1 elemento en la posición "index"
+                localStorage.setItem('voldoEquipos', JSON.stringify(equipos));
+                cargarEquiposEnAdmin(); // Refresca la lista sin recargar la página entera
+            }
+        }
+
+        // --- GUARDAR CONFIGURACIÓN WEB ---
+        document.getElementById('btn-guardar-redes').addEventListener('click', function() {
+            const config = JSON.parse(localStorage.getItem('voldoConfigWeb')) || {};
+            config.fb = document.getElementById('input-fb').value; config.ig = document.getElementById('input-ig').value; config.wa = document.getElementById('input-wa').value;
+            localStorage.setItem('voldoConfigWeb', JSON.stringify(config)); alert('¡Redes sociales guardadas!');
+        });
+        document.getElementById('btn-guardar-correos').addEventListener('click', function() {
+            const config = JSON.parse(localStorage.getItem('voldoConfigWeb')) || {};
+            config.correoVentas = document.getElementById('input-correo-ventas').value; config.correoRentas = document.getElementById('input-correo-rentas').value; config.video = document.getElementById('input-video').value;
+            localStorage.setItem('voldoConfigWeb', JSON.stringify(config)); alert('¡Correos y Video guardados!');
+        });
+
+        // --- GUARDAR TEXTOS ---
+        document.getElementById('btn-guardar-textos').addEventListener('click', function() {
+            const textos = {
+                h1: document.getElementById('t-hero-1').value, h2: document.getElementById('t-hero-2').value, hDesc: document.getElementById('t-hero-desc').value,
+                nTit: document.getElementById('t-nos-titulo').value, nDesc: document.getElementById('t-nos-desc').value,
+                pTit: document.getElementById('t-promesa-titulo').value, pDesc: document.getElementById('t-promesa-desc').value
+            };
+            localStorage.setItem('voldoTextos', JSON.stringify(textos)); alert('¡Textos de la página actualizados!');
+        });
+
+        // --- GUARDAR EQUIPOS NUEVOS E IMÁGENES ---
+        const formAdmin = document.getElementById('form-maquinaria');
+        const inputArchivo = document.getElementById('input-foto');
+        let fotoBase64 = "https://placehold.co/400x300/e2e8f0/475569?text=Sin+Foto"; 
+        
+        document.getElementById('zona-subida').addEventListener('click', () => inputArchivo.click());
+        inputArchivo.addEventListener('change', function() {
+            const arch = this.files[0];
+            if (arch) { const lector = new FileReader(); lector.onload = function() { document.getElementById('texto-subida').style.display = 'none'; document.getElementById('zona-subida').style.backgroundImage = `url(${this.result})`; document.getElementById('zona-subida').style.backgroundSize = 'cover'; fotoBase64 = this.result; }; lector.readAsDataURL(arch); }
+        });
+        
+        formAdmin.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            const nuevoEquipo = { titulo: document.getElementById('val-titulo').value, categoria: document.getElementById('val-categoria').value, modelo: document.getElementById('val-modelo').value, descripcion: document.getElementById('val-descripcion').value, foto: fotoBase64 };
+            let equiposGuardados = JSON.parse(localStorage.getItem('voldoEquipos')) || [];
+            equiposGuardados.push(nuevoEquipo); 
+            localStorage.setItem('voldoEquipos', JSON.stringify(equiposGuardados));
+            
+            alert('¡Equipo guardado con éxito!'); 
+            formAdmin.reset();
+            document.getElementById('zona-subida').style.backgroundImage = 'none';
+            document.getElementById('texto-subida').style.display = 'block';
+            fotoBase64 = "https://placehold.co/400x300/e2e8f0/475569?text=Sin+Foto";
+            cargarEquiposEnAdmin(); // Refresca la vista en el admin instantáneamente
+        });
+
+        document.getElementById('btn-guardar-carrusel').addEventListener('click', async function() {
+            let carruselData = JSON.parse(localStorage.getItem('voldoCarrusel')) || {};
+            for(let i = 1; i <= 6; i++) { const file = document.getElementById(`input-slide-${i}`).files[0]; if (file) carruselData[`slide${i}`] = await convertirABase64(file); }
+            localStorage.setItem('voldoCarrusel', JSON.stringify(carruselData)); alert('¡Imágenes del carrusel actualizadas!');
+        });
+
+        document.getElementById('btn-guardar-cats-refacciones').addEventListener('click', async function() {
+            let catData = JSON.parse(localStorage.getItem('voldoRefaccionesCats')) || {};
+            const files = [document.getElementById('cat-filtros').files[0], document.getElementById('cat-hidraulicos').files[0], document.getElementById('cat-llantas').files[0], document.getElementById('cat-electricas').files[0]];
+            if(files[0]) catData.filtros = await convertirABase64(files[0]); if(files[1]) catData.hidraulicos = await convertirABase64(files[1]); if(files[2]) catData.llantas = await convertirABase64(files[2]); if(files[3]) catData.electricas = await convertirABase64(files[3]);
+            localStorage.setItem('voldoRefaccionesCats', JSON.stringify(catData)); alert('¡Imágenes de categorías de refacciones guardadas!');
+        });
+
+        document.getElementById('btn-guardar-fondos').addEventListener('click', async function() {
+            let fondosData = JSON.parse(localStorage.getItem('voldoFondos')) || {};
+            const f = document.getElementById('input-fondo-promesa').files[0];
+            if(f) fondosData.promesa = await convertirABase64(f);
+            localStorage.setItem('voldoFondos', JSON.stringify(fondosData)); alert('¡Fondo guardado con éxito!');
+        });
+    </script>
+</body>
+</html>
